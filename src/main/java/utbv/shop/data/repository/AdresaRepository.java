@@ -1,17 +1,14 @@
 package utbv.shop.data.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import utbv.shop.data.entity.Adresa;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface AdresaRepository extends CrudRepository<Adresa, String> {
-    Optional<Adresa> findByZipcode(String zipcode);
+public interface AdresaRepository extends JpaRepository<Adresa, Long> {
+    List<Adresa> findAllByZipcode(String zipcode);
 
-    Optional<Adresa> findByStreetEqualsIgnoreCase(String street);
+    List<Adresa> findAllByStreetIgnoreCase(String street);
 
-    List<Adresa> findAll();
-
-    List<Adresa> findByCity(String city);
+    List<Adresa> findAllByCityIgnoreCase(String city);
 }

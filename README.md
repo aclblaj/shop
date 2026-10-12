@@ -1,22 +1,24 @@
 # Shop Spring Boot Web Service
 
-This project is a sample Spring Boot web service for demonstrating database-backed REST APIs. It is designed for use with the SQLLiteDB project, but can be configured for other databases (PostgreSQL, H2, etc.).
+This project is a sample Spring Boot web service for database-backed address management.
 
 ## Features
 - Exposes REST endpoints for address lookup and management
-- Uses Spring Boot (latest version), Spring Data JPA, and Thymeleaf
-- Supports PostgreSQL (default), H2 (for tests), and can be adapted for SQLite
+- Uses Spring Boot 4.1.1 and Spring Data JPA
+- Supports SQLite (default), PostgreSQL (via `postgres` profile), and H2 (for tests)
+- Inserts 10 randomly generated sample addresses on startup when the SQLite database is empty
 - Example endpoint:
-  - `GET http://192.168.0.102:8000/adresa?zc=500041` — returns address details for the given postal code
+  - `GET http://localhost:8000/adresa?zc=500041` — returns all addresses for the given postal code
 
 ## Getting Started
 
 ### Prerequisites
 - Java 21+
 - Maven 3.9+
-- PostgreSQL database (or update `application.properties` for your DB)
 
 ### Build & Run
+
+By default, the application uses the `sqlite` profile and creates `shop.db` in the current working directory:
 ```sh
 mvn clean package
 java -jar target/shop-0.0.1-SNAPSHOT.war
@@ -27,33 +29,44 @@ Or run directly with Maven:
 mvn spring-boot:run
 ```
 
-### Configuration
-Edit `src/main/resources/application.properties` to set your database connection:
-```
-spring.datasource.url=jdbc:postgresql://<host>:<port>/<db>
-spring.datasource.username=<user>
-spring.datasource.password=<password>
+#### Switching to PostgreSQL
+Set connection values through environment variables and activate the `postgres` profile:
+```sh
+export DB_URL=jdbc:postgresql://localhost:5432/shop
+export DB_USERNAME=postgres
+export DB_PASSWORD=your-password
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
 
-For tests, an in-memory H2 database is used automatically.
+On PowerShell, set the variables with `$env:DB_URL`, `$env:DB_USERNAME`, and `$env:DB_PASSWORD` before running Maven. The packaged WAR can also be started with:
+```sh
+java -jar target/shop-0.0.1-SNAPSHOT.war --spring.profiles.active=postgres
+```
+
+### Configuration
+- **SQLite (default)**: `src/main/resources/application-sqlite.properties`.
+- **PostgreSQL**: `src/main/resources/application-postgres.properties` (also available through the `postgresql` profile).
+
+The SQLite seeder runs only with the `sqlite` profile. It does not add sample rows to PostgreSQL or H2.
 
 ## Testing
-Run all tests with:
+Run all tests, including the SQLite persistence and REST integration test, with:
 ```sh
 mvn test
 ```
 
 ## Project Structure
-- `src/main/java/utbv/shop/` — main application code (package name updated to `utbv.shop`)
+- `src/main/java/utbv/shop/` — main application code
 - `src/main/resources/` — configuration and static resources
 - `src/test/java/utbv/shop/` — tests
 
 ## Endpoints
-- `GET /adresa?zc=<postal_code>` — Lookup address by postal code
-
-## Upgrading & Maintenance
-- The project uses the latest Spring Boot version. To upgrade dependencies, update the `pom.xml` and re-run `mvn clean package`.
-- If you change the package name, update all Java source files and configuration accordingly.
+- `GET /adresa?zc=<postal_code>` — List all addresses with a postal code
+- `GET /adresa/{id}` — Read an address by ID
+- `POST /adresa` — Create an address
+- `PUT /adresa/{id}` — Update an address by ID
+- `DELETE /adresa/{id}` — Delete one address by ID
+- `DELETE /adresa?zc=<postal_code>` — Delete all addresses with a postal code
 
 ## License
 This project is for educational/demo purposes.

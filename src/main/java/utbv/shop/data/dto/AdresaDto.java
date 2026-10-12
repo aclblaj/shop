@@ -1,28 +1,21 @@
 package utbv.shop.data.dto;
 
-public class AdresaDto {
-    private String zipcode;
-    private String street;
-    private String city;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-    public AdresaDto() {
-    }
+public record AdresaDto(
+        @NotBlank
+        @Pattern(regexp = "\\d{6}", message = "must contain exactly 6 digits")
+        String zipcode,
 
-    public AdresaDto(String zipcode, String street, String city) {
-        this.zipcode = zipcode;
-        this.street = street;
-        this.city = city;
-    }
+        @NotBlank
+        @Size(max = MAX_FIELD_LENGTH)
+        String street,
 
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public String getCity() {
-        return city;
-    }
+        @NotBlank
+        @Size(max = MAX_FIELD_LENGTH)
+        String city
+) {
+    private static final int MAX_FIELD_LENGTH = 120;
 }

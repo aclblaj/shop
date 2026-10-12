@@ -5,24 +5,34 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "adresa")
+@Table(name = "adresa", indexes = @Index(name = "idx_adresa_zip_code", columnList = "zip_code"))
 public class Adresa {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "adresa_gen")
-    @SequenceGenerator(name = "adresa_gen", sequenceName = "adresa_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "zip_code")
+    @NotBlank
+    @Pattern(regexp = "\\d{6}")
+    @Column(name = "zip_code", nullable = false, length = 6)
     private String zipcode;
-    @Column(name = "street")
+
+    @NotBlank
+    @Size(max = 120)
+    @Column(name = "street", nullable = false, length = 120)
     private String street;
-    @Column(name = "city")
+
+    @NotBlank
+    @Size(max = 120)
+    @Column(name = "city", nullable = false, length = 120)
     private String city;
 
     public Adresa() {
@@ -31,6 +41,10 @@ public class Adresa {
 
     public String getZipcode() {
         return zipcode;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setZipcode(String zipcode) {
